@@ -65,7 +65,8 @@ app.get('/api/users/:_id/logs/', async (req, res) =>{
 	let dateFilter = {}
 	const userId = req.params["_id"];
 	let {from, to , limit} = req.query;
-	// ^^"from" and "to" are dates in yyyy-mm-dd format. "limit" is an integer of how many logs to send back. 
+	// "from" and "to" are dates in yyyy-mm-dd format. 
+	// "limit" is an integer of how many logs to send back. 
 	dateFilter['$gte'] = from ? new Date(from) : null;
 	dateFilter['$lte'] = to ? new Date(to) : null;
 
@@ -89,7 +90,7 @@ app.get('/api/users/:_id/logs/', async (req, res) =>{
 				return {
 					description: exercise.description,
 					duration: exercise.duration,
-					date: new Date(exercise.date).toDateString()
+					date: exercise.date,
 				};
 			})
 		})
@@ -101,7 +102,7 @@ app.get('/api/users/:_id/logs/', async (req, res) =>{
 	})
 })
 
-// POST to /api/users username
+// POST to /api/users
 app.post('/api/users', async (req, res) => {
 	console.log("Got a post request")
 	const username = req.body.username;
@@ -127,16 +128,16 @@ app.post('/api/users/:_id/exercises', async (req, res) => {
 			username: foundUser.username,
 			description: description,
 			duration: duration,
-			date:  date ? date : new Date(Date.now()).toDateString(),
+			date:  date ? new Date(date).toDateString() : new Date(Date.now()).toDateString() ,
 			userId: _id,
 		}).then((exercise) => {
 			console.log(exercise)
 			res.json({
-				username : foundUser.username,
-				description: exercise.description,
+				_id: foundUser["_id"],
+				username: foundUser.username,
 				date: exercise.date,
 				duration: exercise.duration,
-				_id: foundUser["_id"],
+				description: exercise.description,
 			})
 		})	
 	} catch (error) {
